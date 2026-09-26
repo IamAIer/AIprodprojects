@@ -7,11 +7,11 @@ Application teams can use the assistant through its chat interface or through Ji
 ## Answer a Kafka question
 
 1. An application-team member asks about a company Kafka cluster.
-2. The assistant checks approved SOPs and, when needed and allowed, current read-only cluster information.
-3. It answers in plain language and says which sources or checks support the answer.
-4. If it cannot verify something, it says so and asks the user or Kafka team for help instead of guessing.
+2. The assistant checks approved SOPs and, when the question is about cluster health, reads the relevant health information from Datadog.
+3. It answers in plain language, states when the Datadog data was checked, and points to the sources or checks that support the answer.
+4. If Datadog data is unavailable, incomplete, or too old, it says so and asks the user or Kafka team for help instead of guessing.
 
-Questions can include cluster usage, topic configuration, operational procedures, and troubleshooting. The assistant must only reveal information the signed-in user is allowed to see.
+Questions can include cluster usage, topic configuration, operational procedures, and troubleshooting. For cluster health, the assistant gets information from Datadog. It has no direct Kafka client, broker connection, or Kafka credentials. The assistant must only reveal information the signed-in user is allowed to see.
 
 ## Create a Jira operations ticket
 
@@ -34,14 +34,15 @@ The assistant can explain an existing Kafka ticket, identify missing information
 
 Authorized maintainers can provide new context or an SOP in chat. The assistant prepares a proposed knowledge-base update, highlights unclear or conflicting material, and waits for maintainer approval. Only an approved, versioned update is used for application-team answers.
 
-## Project boundary
+## Two implementations in one project
 
-This document defines user workflows and behavior. AWS infrastructure and deployment choices, such as Bedrock, Lambda, and one-click deployment, belong to a separate project.
+The first implementation uses AWS Bedrock and belongs in `../bedrock/`. The later implementation uses an open-source LLM stack and belongs in `../open-source/`. Keep the user workflows in this document consistent across both. Provider-specific code and deployment files stay in their named implementation folder.
 
 ## Access and audit
 
 - Check the user's identity and permissions before answering or creating a Jira ticket.
 - Give the Jira integration only the permissions needed to create and comment on the relevant operational tickets.
-- Keep Kafka checks read-only and show when a check is unavailable or failed.
+- Connect to Datadog for read-only Kafka cluster health checks. Do not connect the agent directly to Kafka or give it Kafka credentials or broker network access.
+- Show when Datadog data is unavailable, incomplete, or failed.
 - Record who requested a ticket, what was created, and which approved sources or checks informed the response.
 - Do not put credentials in source files or expose them in answers or logs.
