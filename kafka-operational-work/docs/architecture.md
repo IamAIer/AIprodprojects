@@ -1,56 +1,47 @@
-# Architecture
+# Assistant workflows
 
-## First version: AWS Bedrock
+## User entry points
 
-```text
-Application team chat ------------------+
-                                         |
-Jira events / ticket requests ----------+--> API Gateway --> AWS Lambda
-                                                              |
-                         +------------------------------------+-------------------+
-                         |                                    |                   |
-                    Amazon Bedrock                    Knowledge base       Read-only Kafka
-                    LLM and reasoning                   SOP/context          checks
-                         |                                    |                   |
-                         +--------------------+---------------+-------------------+
-                                              |
-                                      Jira API / comments
-```
+Application teams can use the assistant through its chat interface or through Jira. The assistant should use the same request rules and approved company knowledge in both places.
 
-The exact AWS Knowledge Bases configuration can be chosen during implementation. Source files should be stored in versioned storage and indexed only after an authorized maintainer approves them.
+## Answer a Kafka question
 
-## Main flows
+1. An application-team member asks about a company Kafka cluster.
+2. The assistant checks approved SOPs and, when needed and allowed, current read-only cluster information.
+3. It answers in plain language and says which sources or checks support the answer.
+4. If it cannot verify something, it says so and asks the user or Kafka team for help instead of guessing.
 
-### Ask a Kafka question
+Questions can include cluster usage, topic configuration, operational procedures, and troubleshooting. The assistant must only reveal information the signed-in user is allowed to see.
 
-1. An authenticated application user asks in chat or Jira.
-2. Lambda sends the request to Bedrock with relevant approved SOP content.
-3. When useful and permitted, read-only Kafka tools check the cluster.
-4. The assistant answers with the sources and checks it used. If a check is unavailable, it says so.
+## Create a Jira operations ticket
 
-### Create an operations ticket
+1. A user asks the assistant to submit a Kafka operation.
+2. The assistant identifies the operation type and collects the required details. Supported request types include:
+   - Create a topic.
+   - Alter a topic.
+   - Delete a topic.
+   - Mirror data from production to SDE.
+   - Change cleanup policy from `delete` to `compact`.
+3. The assistant shows a short summary and asks for missing details or confirmation when needed.
+4. The Jira integration creates the appropriate operational ticket and returns its link/key to the user.
+5. The team's normal approval and execution process performs the Kafka change. The assistant does not issue Kafka create, alter, or delete commands.
 
-1. The user asks for a Kafka operation, such as creating a topic or mirroring production data to SDE.
-2. The assistant collects required fields and confirms the request summary.
-3. A Jira integration creates a ticket using the configured issue type and project.
-4. The team's existing approval and execution flow handles the Kafka change. The assistant does not execute it.
+## Help with Jira tickets
 
-### Update SOP knowledge
+The assistant can explain an existing Kafka ticket, identify missing information, and comment with relevant SOP guidance or read-only checks. It must ignore its own comments when processing Jira events to avoid a reply loop.
 
-1. An authorized maintainer gives the assistant context or a new/revised SOP in chat.
-2. The assistant prepares a proposed update and points out unclear or conflicting information.
-3. A maintainer reviews and approves the draft.
-4. The system stores a new version, indexes it, and confirms when it is available. Unapproved drafts are never used to answer application-team questions.
+## Update approved knowledge
 
-## Provider boundary
+Authorized maintainers can provide new context or an SOP in chat. The assistant prepares a proposed knowledge-base update, highlights unclear or conflicting material, and waits for maintainer approval. Only an approved, versioned update is used for application-team answers.
 
-Keep model calls behind a small provider interface. The first provider uses Amazon Bedrock. A later open-source provider can implement the same interface while keeping the chat, ticket rules, SOP workflow, and Kafka read-only tools separate from model-specific code.
+## Project boundary
 
-## Safety and access
+This document defines user workflows and behavior. AWS infrastructure and deployment choices, such as Bedrock, Lambda, and one-click deployment, belong to a separate project.
 
-- Authenticate chat users and enforce company access rules for cluster information.
-- Give the Jira integration only the permissions needed to create and comment on approved ticket types.
-- Keep Kafka tools read-only and use least-privilege network and IAM access.
-- Ignore the assistant's own Jira comments to prevent repeated webhook processing.
-- Keep credentials in AWS Secrets Manager; never put tokens or broker credentials in source files.
-- Log request IDs and actions without logging secrets or unnecessary sensitive ticket content.
+## Access and audit
+
+- Check the user's identity and permissions before answering or creating a Jira ticket.
+- Give the Jira integration only the permissions needed to create and comment on the relevant operational tickets.
+- Keep Kafka checks read-only and show when a check is unavailable or failed.
+- Record who requested a ticket, what was created, and which approved sources or checks informed the response.
+- Do not put credentials in source files or expose them in answers or logs.
