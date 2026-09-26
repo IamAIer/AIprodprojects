@@ -30,4 +30,4 @@ Datadog is the only source the agent uses for Kafka cluster health checks. The a
 
 ## Project boundary
 
-Both LLM implementations belong in this project, in their separate folders. The Bedrock implementation is built first; the open-source implementation is added later. See [architecture.md](docs/architecture.md) for the shared user and system workflows.
+Both LLM implementations belong in this project, in their separate folders. The Bedrock implementation is built first; the open-source implementation is added later. See [architecture.md](docs/architecture.md) for the shared user workflows and [requirements.md](docs/requirements.md) for the full requirements.
