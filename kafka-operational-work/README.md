@@ -1,6 +1,6 @@
 # Kafka Operational Assistant
 
-This project contains two separately named implementations of the same LLM assistant: the first uses AWS Bedrock, and a later version uses an open-source LLM stack. Both support application teams that use the company's Kafka clusters. The assistant connects to Jira to help teams create operational tickets and answers Kafka questions using approved company information and permitted cluster checks.
+This project contains two separately named implementations of the same LLM assistant: the first uses AWS Bedrock, and a later version uses an open-source LLM stack. Both support application teams that use the company's Kafka clusters. The assistant connects to Jira to help teams create operational tickets and to Datadog for Kafka cluster health information. It does not connect directly to any Kafka cluster.
 
 ## Folder layout
 
@@ -21,12 +21,12 @@ Keep Bedrock-specific code and deployment files in `bedrock/`. Keep open-source 
 - Create Jira tickets for production-to-SDE mirroring requests.
 - Create Jira tickets for cleanup-policy changes from `delete` to `compact`.
 - Ask for missing request details before creating a ticket.
-- Explain answers and ticket details using approved SOPs and relevant read-only Kafka checks.
+- Explain answers and ticket details using approved SOPs and relevant Datadog health information.
 - Let authorized maintainers provide context or new/revised SOPs in chat, prepare a draft update, and publish it to the knowledge base only after approval.
 
 The assistant creates and supports Jira requests. The existing approval and execution process makes Kafka changes; the assistant does not issue Kafka create, alter, or delete commands.
 
-Datadog is the health-data source for cluster checks. The agent must say when Datadog data is unavailable or too old to support a reliable answer.
+Datadog is the only source the agent uses for Kafka cluster health checks. The agent must say when Datadog data is unavailable or too old to support a reliable answer. Do not configure Kafka brokers, Kafka credentials, or direct Kafka network access for the agent.
 
 ## Project boundary
 

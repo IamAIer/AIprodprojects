@@ -1,6 +1,6 @@
 # Datadog health checks
 
-The assistant uses Datadog as its source for Kafka cluster health. Datadog access is read-only: the assistant reads health information and does not make changes through Datadog or directly on Kafka.
+The assistant connects to Datadog for Kafka cluster health. It does not connect directly to a Kafka cluster: do not configure broker endpoints, Kafka credentials, Kafka client libraries, or agent network access to Kafka. Datadog access is read-only; the assistant reads health information and does not make changes through Datadog.
 
 ## Answering with Datadog data
 
@@ -16,4 +16,4 @@ The assistant uses Datadog as its source for Kafka cluster health. Datadog acces
 - How recent the data must be for a health answer to count as current.
 - Which Datadog groups map to the company's user access rules.
 
-Store Datadog credentials in the selected deployment's secret store. Never commit credentials to this repository.
+Store Datadog credentials in the selected deployment's secret store. Never commit credentials to this repository. Do not store Kafka credentials for this assistant.

@@ -11,7 +11,7 @@ Application teams can use the assistant through its chat interface or through Ji
 3. It answers in plain language, states when the Datadog data was checked, and points to the sources or checks that support the answer.
 4. If Datadog data is unavailable, incomplete, or too old, it says so and asks the user or Kafka team for help instead of guessing.
 
-Questions can include cluster usage, topic configuration, operational procedures, and troubleshooting. The assistant must only reveal information the signed-in user is allowed to see.
+Questions can include cluster usage, topic configuration, operational procedures, and troubleshooting. For cluster health, the assistant gets information from Datadog. It has no direct Kafka client, broker connection, or Kafka credentials. The assistant must only reveal information the signed-in user is allowed to see.
 
 ## Create a Jira operations ticket
 
@@ -42,6 +42,7 @@ The first implementation uses AWS Bedrock and belongs in `../bedrock/`. The late
 
 - Check the user's identity and permissions before answering or creating a Jira ticket.
 - Give the Jira integration only the permissions needed to create and comment on the relevant operational tickets.
-- Use Datadog for read-only Kafka cluster health checks. Show when a check is unavailable, incomplete, or failed.
+- Connect to Datadog for read-only Kafka cluster health checks. Do not connect the agent directly to Kafka or give it Kafka credentials or broker network access.
+- Show when Datadog data is unavailable, incomplete, or failed.
 - Record who requested a ticket, what was created, and which approved sources or checks informed the response.
 - Do not put credentials in source files or expose them in answers or logs.
