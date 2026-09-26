@@ -1,0 +1,15 @@
+<%- | Integer $node_id, String $private_ip, String $public_ip | -%>
+broker.id=<%= $node_id %>
+listeners=INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:9094
+advertised.listeners=INTERNAL://<%= $private_ip %>:9092,EXTERNAL://<%= $public_ip %>:9094
+listener.security.protocol.map=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+inter.broker.listener.name=INTERNAL
+zookeeper.connect=10.20.1.11:2181,10.20.1.12:2181,10.20.1.13:2181
+log.dirs=/var/lib/kafka
+num.partitions=3
+default.replication.factor=3
+min.insync.replicas=2
+offsets.topic.replication.factor=3
+transaction.state.log.replication.factor=3
+transaction.state.log.min.isr=2
+auto.create.topics.enable=false
