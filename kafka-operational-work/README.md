@@ -16,7 +16,7 @@ Keep Bedrock-specific code and deployment files in `bedrock/`. Keep open-source 
 
 ## What it should do
 
-- Answer application teams' questions about company Kafka clusters.
+- Answer application teams' questions about company Kafka clusters, using Datadog to check cluster health.
 - Create Jira tickets for Kafka topic creation, alteration, and deletion requests.
 - Create Jira tickets for production-to-SDE mirroring requests.
 - Create Jira tickets for cleanup-policy changes from `delete` to `compact`.
@@ -25,6 +25,8 @@ Keep Bedrock-specific code and deployment files in `bedrock/`. Keep open-source 
 - Let authorized maintainers provide context or new/revised SOPs in chat, prepare a draft update, and publish it to the knowledge base only after approval.
 
 The assistant creates and supports Jira requests. The existing approval and execution process makes Kafka changes; the assistant does not issue Kafka create, alter, or delete commands.
+
+Datadog is the health-data source for cluster checks. The agent must say when Datadog data is unavailable or too old to support a reliable answer.
 
 ## Project boundary
 

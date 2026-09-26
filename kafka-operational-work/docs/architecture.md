@@ -7,9 +7,9 @@ Application teams can use the assistant through its chat interface or through Ji
 ## Answer a Kafka question
 
 1. An application-team member asks about a company Kafka cluster.
-2. The assistant checks approved SOPs and, when needed and allowed, current read-only cluster information.
-3. It answers in plain language and says which sources or checks support the answer.
-4. If it cannot verify something, it says so and asks the user or Kafka team for help instead of guessing.
+2. The assistant checks approved SOPs and, when the question is about cluster health, reads the relevant health information from Datadog.
+3. It answers in plain language, states when the Datadog data was checked, and points to the sources or checks that support the answer.
+4. If Datadog data is unavailable, incomplete, or too old, it says so and asks the user or Kafka team for help instead of guessing.
 
 Questions can include cluster usage, topic configuration, operational procedures, and troubleshooting. The assistant must only reveal information the signed-in user is allowed to see.
 
@@ -42,6 +42,6 @@ The first implementation uses AWS Bedrock and belongs in `../bedrock/`. The late
 
 - Check the user's identity and permissions before answering or creating a Jira ticket.
 - Give the Jira integration only the permissions needed to create and comment on the relevant operational tickets.
-- Keep Kafka checks read-only and show when a check is unavailable or failed.
+- Use Datadog for read-only Kafka cluster health checks. Show when a check is unavailable, incomplete, or failed.
 - Record who requested a ticket, what was created, and which approved sources or checks informed the response.
 - Do not put credentials in source files or expose them in answers or logs.
