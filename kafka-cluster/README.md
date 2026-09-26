@@ -28,6 +28,10 @@ This is a small, disposable AWS demonstration cluster. Each of the three EC2 ins
 - The stack does not create application topics. Create topics with replication factor `3` and `min.insync.replicas=2` for the intended three-broker behavior.
 - The public IPs are assigned at launch and will change if instances are replaced. Read the CloudFormation outputs again after replacement.
 
+## Optional Puppet configuration management
+
+The cluster starts with the CloudFormation-provisioned Kafka and ZooKeeper configuration. To manage those configuration files with open-source Puppet after launch, use the standalone module and setup guide in [`puppet/`](puppet/README.md). It uses local `puppet apply`, adds no Puppet Server, and does not create AWS resources. Puppet package installation may require free registration/repository credentials; follow Puppet's current instructions and keep credentials off GitHub and out of CloudFormation. This optional step is manually applied on each node and is not an automatic deployment action.
+
 ## Delete every stack resource
 
 1. In CloudFormation, select the stack and choose **Delete**.
