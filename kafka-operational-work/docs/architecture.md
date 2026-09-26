@@ -34,9 +34,9 @@ The assistant can explain an existing Kafka ticket, identify missing information
 
 Authorized maintainers can provide new context or an SOP in chat. The assistant prepares a proposed knowledge-base update, highlights unclear or conflicting material, and waits for maintainer approval. Only an approved, versioned update is used for application-team answers.
 
-## Project boundary
+## Two implementations in one project
 
-This document defines user workflows and behavior. AWS infrastructure and deployment choices, such as Bedrock, Lambda, and one-click deployment, belong to a separate project.
+The first implementation uses AWS Bedrock and belongs in `../bedrock/`. The later implementation uses an open-source LLM stack and belongs in `../open-source/`. Keep the user workflows in this document consistent across both. Provider-specific code and deployment files stay in their named implementation folder.
 
 ## Access and audit
 

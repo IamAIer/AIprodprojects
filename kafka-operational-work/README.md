@@ -1,6 +1,18 @@
 # Kafka Operational Assistant
 
-This project defines an LLM assistant for application teams that use the company's Kafka clusters. The assistant connects to Jira to help teams create operational tickets, and answers Kafka questions using approved company information and permitted cluster checks.
+This project contains two separately named implementations of the same LLM assistant: the first uses AWS Bedrock, and a later version uses an open-source LLM stack. Both support application teams that use the company's Kafka clusters. The assistant connects to Jira to help teams create operational tickets and answers Kafka questions using approved company information and permitted cluster checks.
+
+## Folder layout
+
+```text
+kafka-operational-work/
+├── bedrock/       # First implementation: AWS Bedrock
+├── open-source/   # Later implementation: open-source LLM stack
+├── docs/          # Workflows and requirements shared by both
+└── README.md
+```
+
+Keep Bedrock-specific code and deployment files in `bedrock/`. Keep open-source model code and its deployment files in `open-source/`. Put provider-independent requirements and workflows in `docs/`.
 
 ## What it should do
 
@@ -16,6 +28,4 @@ The assistant creates and supports Jira requests. The existing approval and exec
 
 ## Project boundary
 
-This repository covers the assistant's user-facing behavior, Jira workflows, Kafka question-answering, and knowledge-base rules. Detailed AWS deployment work (including Bedrock, Lambda, and one-click deployment) will be developed in a separate project.
-
-See [architecture.md](docs/architecture.md) for the user and system workflows.
+Both LLM implementations belong in this project, in their separate folders. The Bedrock implementation is built first; the open-source implementation is added later. See [architecture.md](docs/architecture.md) for the shared user and system workflows.
