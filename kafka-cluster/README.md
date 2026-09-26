@@ -39,3 +39,39 @@ Deleting the stack permanently deletes Kafka data on the attached volumes. Expor
 ## Review before use
 
 This template opens TCP `9094` only to the CIDR you provide; cluster coordination ports are allowed only between instances in this stack's security group. It grants the EC2 nodes the AWS-managed Systems Manager core policy and does not grant cluster instances permission to mutate other AWS resources. The cluster has no TLS, SASL, Kafka ACLs, or production backup/monitoring setup.
+
+## Deploy later with AWS CLI (PowerShell)
+
+Merging the PR does not run these commands and does not create AWS resources. Run them manually from the repository root on the day you want the cluster. They create the CloudFormation stack only in the account and Region shown by your AWS CLI profile.
+
+First install AWS CLI v2 and authenticate using your approved AWS sign-in method. Do not paste AWS access keys into chat. These preflight commands only check the selected identity and validate the template; they do not create resources:
+
+```powershell
+$region = Read-Host 'AWS Region, for example ap-south-1'
+$allowedClientCidr = Read-Host 'Your public IPv4 CIDR, for example 203.0.113.10/32'
+aws sts get-caller-identity --region $region
+aws cloudformation validate-template --template-body file://kafka-cluster/cluster.yaml --region $region
+```
+
+Replace the example CIDR with your current public IP followed by `/32`. Then create and wait for the stack:
+
+```powershell
+$stackName = 'aiprod-kafka-demo'
+aws cloudformation create-stack --stack-name $stackName --template-body file://kafka-cluster/cluster.yaml --parameters "ParameterKey=AllowedClientCidr,ParameterValue=$allowedClientCidr" "ParameterKey=InstanceType,ParameterValue=t3.small" --capabilities CAPABILITY_IAM --region $region
+aws cloudformation wait stack-create-complete --stack-name $stackName --region $region
+aws cloudformation describe-stacks --stack-name $stackName --query 'Stacks[0].Outputs' --output table --region $region
+```
+
+`create-stack` is the step that starts creating billable AWS resources. The wait command can take several minutes. Check the CloudFormation events and EC2 instance status checks before using Kafka; EC2 creation can finish before the first-boot Kafka installation is complete.
+
+## Delete later with AWS CLI
+
+When finished, delete the stack and wait until CloudFormation confirms deletion:
+
+```powershell
+aws cloudformation delete-stack --stack-name $stackName --region $region
+aws cloudformation wait stack-delete-complete --stack-name $stackName --region $region
+```
+
+This permanently deletes the Kafka data on the stack's EC2 volumes. Save anything you need before deleting. Confirm the stack is gone in CloudFormation before considering cleanup complete.
+
