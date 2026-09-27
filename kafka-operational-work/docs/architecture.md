@@ -2,37 +2,38 @@
 
 ## User entry points
 
-Application teams can use the assistant through its chat interface or through Jira. The assistant should use the same request rules and approved company knowledge in both places.
+In the first version, application teams use the bot by asking or commenting on an existing Jira issue. There is no separate application chat interface in this version.
 
 ## Answer a Kafka question
 
-1. An application-team member asks about a company Kafka cluster.
-2. The assistant checks approved SOPs and, when the question is about cluster health, reads the relevant health information from Datadog.
-3. It answers in plain language, states when the Datadog data was checked, and points to the sources or checks that support the answer.
-4. If Datadog data is unavailable, incomplete, or too old, it says so and asks the user or Kafka team for help instead of guessing.
+1. An application-team member asks a Kafka health or process question on a Jira issue.
+2. The bot searches approved SOPs in S3. For cluster health, it reads relevant information from Datadog.
+3. It replies in English as a Jira comment and identifies the SOP or Datadog information used.
+4. If the needed Datadog information is unavailable, incomplete, or too old, it says so instead of guessing.
 
-Questions can include cluster usage, topic configuration, operational procedures, and troubleshooting. For cluster health, the assistant gets information from Datadog. It has no direct Kafka client, broker connection, or Kafka credentials. The assistant must only reveal information the signed-in user is allowed to see.
+Questions are limited to Kafka cluster health and operational process. The bot uses Datadog and approved SOPs; it has no direct Kafka client, broker connection, or Kafka credentials.
 
-## Create a Jira operations ticket
+## Later: create a Jira operations ticket
 
-1. A user asks the assistant to submit a Kafka operation.
-2. The assistant identifies the operation type and collects the required details. Supported request types include:
+Ticket creation is not part of the first version. When added later, a user can ask the assistant to submit a Kafka operation.
+
+1. The assistant identifies the operation type and collects the required details. Supported request types include:
    - Create a topic.
    - Alter a topic.
    - Delete a topic.
    - Mirror data from production to SDE.
-   - Change cleanup policy from `delete` to `compact`.
-3. The assistant shows a short summary and asks for missing details or confirmation when needed.
-4. The Jira integration creates the appropriate operational ticket and returns its link/key to the user.
-5. The team's normal approval and execution process performs the Kafka change. The assistant does not issue Kafka create, alter, or delete commands.
+   - Change cleanup policy from `compact` to `delete`.
+2. The assistant collects missing details, then shows a summary for the user to approve.
+3. Only after approval does Jira create the operational ticket and return its link/key.
+4. The team's normal approval and execution process performs the Kafka change. The assistant does not issue Kafka create, alter, or delete commands.
 
 ## Help with Jira tickets
 
-The assistant can explain an existing Kafka ticket, identify missing information, and comment with relevant SOP guidance or read-only checks. It must ignore its own comments when processing Jira events to avoid a reply loop.
+The first-version bot answers on existing Kafka Jira issues, explains relevant approved SOP guidance, and uses Datadog health information when needed. It must ignore its own comments when processing Jira events to avoid a reply loop.
 
-## Update approved knowledge
+## Later: update approved knowledge through chat
 
-Authorized maintainers can provide new context or an SOP in chat. The assistant prepares a proposed knowledge-base update, highlights unclear or conflicting material, and waits for maintainer approval. Only an approved, versioned update is used for application-team answers.
+In the first version, Admin1 through Admin4 maintain the approved SOP files in S3. A separate chat-based workflow for submitting, reviewing, and approving proposed SOP updates may be added later. Only approved, versioned material is used for application-team answers.
 
 ## Two implementations in one project
 
@@ -40,9 +41,9 @@ The first implementation uses AWS Bedrock and belongs in `../bedrock/`. The late
 
 ## Access and audit
 
-- Check the user's identity and permissions before answering or creating a Jira ticket.
-- Give the Jira integration only the permissions needed to create and comment on the relevant operational tickets.
+- Check the user's identity and permissions before answering on Jira.
+- Give the first-version Jira integration permission to read relevant issues and add comments only.
 - Connect to Datadog for read-only Kafka cluster health checks. Do not connect the agent directly to Kafka or give it Kafka credentials or broker network access.
 - Show when Datadog data is unavailable, incomplete, or failed.
-- Record who requested a ticket, what was created, and which approved sources or checks informed the response.
+- Record who asked, which Jira issue was answered, and which approved sources or checks informed the response. For later ticket creation, record the requester and created ticket.
 - Do not put credentials in source files or expose them in answers or logs.
