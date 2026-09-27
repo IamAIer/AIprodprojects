@@ -1,6 +1,6 @@
 # Three-node Kafka demo cluster
 
-This folder contains a disposable three-node Apache Kafka and ZooKeeper cluster for learning. Terraform creates the AWS resources. Puppet applies the Kafka and ZooKeeper configuration on each server.
+This folder contains a disposable three-node Apache Kafka and ZooKeeper cluster for learning. Terraform creates the AWS resources, and each server's first-boot script installs Kafka and writes its broker settings.
 
 This is not a production design. It uses Kafka 3.9.2 in ZooKeeper mode because Kafka 4 removed ZooKeeper support. Client traffic uses plaintext. Open port 9094 only to your own public IPv4 address (`/32`).
 
@@ -9,10 +9,6 @@ This is not a production design. It uses Kafka 3.9.2 in ZooKeeper mode because K
 Follow the [Terraform deployment guide](terraform/README.md). It creates the VPC, subnet, security group, IAM role, and three EC2 servers in Mumbai (`ap-south-1` by default). Terraform does not deploy the separate Bedrock Jira assistant.
 
 The EC2 servers have no SSH access. Use AWS Systems Manager Session Manager. Terraform creates an IAM role for Session Manager, and the Amazon Linux 2023 image includes its agent.
-
-## Apply Puppet settings
-
-Terraform's first-boot script installs Kafka and ZooKeeper and starts the services. The Puppet module in [`puppet/`](puppet/) manages Kafka's two property files and keeps both services running. Install Puppet on each server using its current official instructions, then run `apply-kafka.sh` as described in the [Puppet guide](puppet/README.md).
 
 ## Remove the demo
 
