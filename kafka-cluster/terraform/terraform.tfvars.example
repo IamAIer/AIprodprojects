@@ -1,0 +1,7 @@
+aws_region           = "ap-south-1"
+environment          = "demo"
+cluster_name         = "aiprod-kafka-demo-tf"
+allowed_client_cidr  = "203.0.113.10/32" # Replace with your current public IPv4 address followed by /32.
+instance_type        = "t3.small"
+kafka_version        = "3.9.2"
+data_volume_size_gib = 20
