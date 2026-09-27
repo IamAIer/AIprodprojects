@@ -1,0 +1,23 @@
+# Terraform provider cache and local state
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+
+# Local Terraform inputs and overrides may contain account-specific values
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Local secrets and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
