@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and replace these example values before planning.
+jira_project_key = "KAFKA"
+bedrock_model_id = "replace-with-an-enabled-model-or-inference-profile-id"
+bedrock_model_arns = [
+  "replace-with-the-model-or-inference-profile-arn",
+]
