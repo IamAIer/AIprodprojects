@@ -1,5 +1,7 @@
 # Terraform provider cache and local state
 **/.terraform/*
+**/.build/
+*.zip
 *.tfstate
 *.tfstate.*
 *.tfplan
